@@ -34,7 +34,7 @@ exports.deleteSauce = (req, res, next) => {
        const filename = sauce.imageUrl.split("/images")[1]; 
        fs.unlink(`images/${filename}`, () =>{
         Sauce.deleteOne({ _id: req.params.id })
-        .then(() => res.status(200).json({ message: 'Saucesupprimé !'}))
+        .then(() => res.status(200).json({ message: 'Sauce supprimé !'}))
         .catch(error => res.status(400).json({ error }));
        });
     })
@@ -43,7 +43,11 @@ exports.deleteSauce = (req, res, next) => {
 
 exports.getOneSauce = (req, res, next) => {
     Sauce.findOne({ _id: req.params.id })
-      .then(sauce => res.status(200).json(sauce))
+      .then(sauce => {
+         // let sauce = sauce;
+         // sauce.likes = sauce.usersLiked.length
+          return res.status(200).json(sauce)
+      })
       .catch(error => res.status(404).json({ error }));
 };
 
@@ -73,8 +77,8 @@ exports.likeDislikeSauce = (req, res, next) => {
                 {
                     $pull : { usersLiked : req.body.userId },
                     $pull : { usersDisliked : req.body.userId },
-                    $inc: { likes : -1 },
-                    $inc: { dislikes : -1 }
+                    $dec: { likes : 1 },
+                    $dec: { dislikes : 1 }
                 };
             break;
         case 1:
