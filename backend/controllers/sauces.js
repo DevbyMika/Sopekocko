@@ -8,9 +8,7 @@ exports.createSauce = (req, res, next) => {
       ...sauceObject,
       imageUrl: `${req.protocol}://${req.get("host")}/images/${req.file.filename}`,
       likes: 0,
-      dislikes: 0,
-      usersLiked: [],
-      usersDisliked: [],
+      dislikes: 0
     });
     sauce.save()
       .then(() => res.status(201).json({ message: 'Sauce enregistré !'}))
@@ -46,7 +44,7 @@ exports.getOneSauce = (req, res, next) => {
       .then(sauce => {
          // let sauce = sauce;
          // sauce.likes = sauce.usersLiked.length
-          return res.status(200).json(sauce)
+          res.status(200).json(sauce)
       })
       .catch(error => res.status(404).json({ error }));
 };
@@ -58,43 +56,48 @@ exports.getAllSauces = (req, res, next) => {
 };
 
 exports.likeDislikeSauce = (req, res, next) => {
-    console.log(req.body.like)
-    let like = req.body.like
-    let option = {}
-    switch(like) {
-        case -1:
-            console.log("case -1");
-            option =
-                {
-                    $push : { usersDisliked : req.body.userId },
-                    $inc: { dislikes : 1 }
-                };
-            break;
-        case 0:
-            console.log("case 0");
-            //if (user)
-            option =
-                {
-                    $pull : { usersLiked : req.body.userId },
-                    $pull : { usersDisliked : req.body.userId },
-                    $dec: { likes : 1 },
-                    $dec: { dislikes : 1 }
-                };
-            break;
-        case 1:
-            console.log("case 1");
-            console.log(req.body);
-            option =
-                {   
-                    $inc : { likes : 1 },
-                    $push : { usersLiked : req.body.userId }
-                };
-            break;
+    const userId = req.body.userId;
+    const like = req.body.like;
+    const sauceId = req.params.id;
+    Sauce.findOne({ _id: sauceId })
+        .then(sauce => {
+            // New value modification
+            const newValues = {
+                usersLiked: sauce.usersLiked,
+                usersDisliked: sauce.usersDisliked,
+                likes: 0,
+                dislikes: 0
+            }
+            // In case :
+            switch (like) {
+                case 1:  // sauce liked
+                    newValues.usersLiked.push(userId);
+                    break;
+                case -1:  // sauce disliked
+                    newValues.usersDisliked.push(userId);
+                    break;
+                case 0:  // delete like/dislike
+                    if (newValues.usersLiked.includes(userId)) {
+                        // delete like
+                        const index = newValues.usersLiked.indexOf(userId);
+                        newValues.usersLiked.splice(index, 1);
+                    } else {
+                        // delete dislike
+                        const index = newValues.usersDisliked.indexOf(userId);
+                        newValues.usersDisliked.splice(index, 1);
+                    }
+                    break;
+            };
+            // Calcul du nombre de likes / dislikes
+            newValues.likes = newValues.usersLiked.length;
+            newValues.dislikes = newValues.usersDisliked.length;
+            // Mise à jour de la sauce avec les nouvelles valeurs
+            Sauce.updateOne({ _id: sauceId }, newValues )
+                .then(() => res.status(200).json({ message: 'Sauce notée !' }))
+                .catch(error => res.status(400).json({ error }))  
+        })
+        .catch(error => res.status(500).json({ error }));
     }
-    Sauce.updateOne({ _id: req.params.id }, option)
-        .then(() => res.status(200).json({ message: "Objet Liké!" }))      
-        .catch(error => res.status(400).json({ error }));
-};
 
 
 

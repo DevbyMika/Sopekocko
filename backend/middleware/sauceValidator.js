@@ -1,7 +1,6 @@
-var mongoose = require('mongoose')
-var validate = require('mongoose-validator')
+const validate = require('mongoose-validator')
  
-exports.nameValidator = [
+module.exports.nameValidator = [
   validate({
     validator: 'isLength',
     arguments: [3, 60],
@@ -13,7 +12,7 @@ exports.nameValidator = [
     message: 'Vous ne pouvez saisir que des chiffres et des lettres',
   }),
 ]
-exports.manufacturerValidator = [
+module.exports.manufacturerValidator = [
   validate({
     validator: 'isLength',
     arguments: [3, 60],
@@ -25,7 +24,7 @@ exports.manufacturerValidator = [
     message: 'Vous ne pouvez saisir que des chiffres et des lettres',
   }),
 ]
-exports.descriptionValidator = [
+module.exports.descriptionValidator = [
   validate({
     validator: 'isLength',
     arguments: [10, 150],
@@ -37,7 +36,7 @@ exports.descriptionValidator = [
     message: 'Vous ne pouvez saisir que des chiffres et des lettres',
   }),
 ]
-exports.mainPepperValidator = [
+module.exports.mainPepperValidator = [
   validate({
     validator: 'isLength',
     arguments: [3, 20],
