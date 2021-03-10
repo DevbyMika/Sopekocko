@@ -43,8 +43,6 @@ exports.deleteSauce = (req, res, next) => {
 exports.getOneSauce = (req, res, next) => {
   Sauce.findOne({ _id: req.params.id })
     .then(sauce => {
-      // let sauce = sauce;
-      // sauce.likes = sauce.usersLiked.length
       res.status(200).json(sauce)
     })
     .catch(error => res.status(404).json({ error }))
@@ -89,10 +87,10 @@ exports.likeDislikeSauce = (req, res, next) => {
           }
           break
       };
-      // Calcul du nombre de likes / dislikes
+      // likes / dislikes count
       newValues.likes = newValues.usersLiked.length
       newValues.dislikes = newValues.usersDisliked.length
-      // Mise à jour de la sauce avec les nouvelles valeurs
+      // upgrade sauce modification
       Sauce.updateOne({ _id: sauceId }, newValues)
         .then(() => res.status(200).json({ message: 'Sauce notée !' }))
         .catch(error => res.status(400).json({ error }))
