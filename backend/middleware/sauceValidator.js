@@ -1,4 +1,5 @@
 const validate = require('mongoose-validator')
+
 module.exports.nameValidator = [
   validate({
     validator: 'isLength',

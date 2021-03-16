@@ -1,7 +1,9 @@
 const mongoose = require('mongoose')
+// validate email syntax
 require('mongoose-type-email')
-
+// constraint unique user field
 const uniqueValidator = require('mongoose-unique-validator')
+// clean enter data before send to database
 const sanitizerPlugin = require('mongoose-sanitizer-plugin')
 
 const userSchema = mongoose.Schema({

@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+// clean enter data before send to database
 const sanitizerPlugin = require('mongoose-sanitizer-plugin')
 const sauceValidator = require('../middleware/sauceValidator')
 

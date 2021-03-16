@@ -1,3 +1,4 @@
+// create constraint to secure user password
 const PasswordValidator = require('password-validator')
 
 // Create a schema

@@ -1,10 +1,12 @@
 const express = require('express')
-const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
+// Add 9 middelware add heading http securitys
 const helmet = require('helmet')
+// secure path
 const path = require('path')
-const nocache = require('nocache')
+// secure user cooki session
 const cookieSession = require('cookie-session')
+// environnement variable to secure serveur path
 const dotenv = require('dotenv')
 
 const saucesRoutes = require('./routes/sauces')
@@ -31,12 +33,11 @@ app.use((req, res, next) => {
 })
 
 app.use(helmet())
-app.use(nocache())
 
 const expiryDate = new Date(Date.now() + 3600000)
 app.use(cookieSession({
   name: 'session',
-  secret: 'RANDOM_SECRET_KEY',
+  secret: process.env.SEC_SES,
   cookie: {
     secure: true,
     httpOnly: true,
@@ -45,11 +46,9 @@ app.use(cookieSession({
   }
 }))
 
-app.use(bodyParser.urlencoded({
-  extended: true
-}))
-
-app.use(bodyParser.json())
+// update body parser reading, read and convert the serveur request
+app.use(express.urlencoded({ extended: true }))
+app.use(express.json())
 
 app.use('/images', express.static(path.join(__dirname, 'images')))
 
